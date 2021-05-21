@@ -7,7 +7,7 @@ package v8go_test
 import (
 	"testing"
 
-	"rogchap.com/v8go"
+	"github.com/zwang/v8go"
 )
 
 func TestFunctionCall(t *testing.T) {

@@ -64,7 +64,7 @@ func NewValue(iso *Isolate, val interface{}) (*Value, error) {
 		}
 	case int64:
 		rtnVal = &Value{
-			ptr: C.NewValueBigInt(iso.ptr, C.int64_t(v)),
+			ptr: C.NewValueLong(iso.ptr, C.int64_t(v)),
 		}
 	case uint64:
 		rtnVal = &Value{

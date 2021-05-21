@@ -20,8 +20,11 @@ struct _EXCEPTION_POINTERS;
 
 #include "libplatform/libplatform.h"
 #include "v8.h"
+#include "glv8.h"
 
 using namespace v8;
+
+bool sonic_gl_error_check = true;
 
 auto default_platform = platform::NewDefaultPlatform();
 auto default_allocator = ArrayBuffer::Allocator::NewDefaultAllocator();
@@ -373,6 +376,12 @@ ContextPtr NewContext(IsolatePtr iso_ptr,
     global_template = ObjectTemplate::New(iso);
   }
 
+  Local<ObjectTemplate> gl = ObjectTemplate::New(iso);
+  global_template->Set(String::NewFromUtf8(iso, "GL").ToLocalChecked(), gl);
+  bindGL(iso, gl);
+  //  Local<ObjectTemplate> pmath = ObjectTemplate::New(isolate);
+  //  global_template->Set(String::NewFromUtf8(isolate, "pmath").ToLocalChecked(), pmath);
+
   // For function callbacks we need a reference to the context, but because of
   // the complexities of C -> Go function pointers, we store a reference to the
   // context as a simple integer identifier; this can then be used on the Go
@@ -567,6 +576,16 @@ ValuePtr NewValueBoolean(IsolatePtr iso_ptr, int v) {
   val->ctx = ctx;
   val->ptr = Persistent<Value, CopyablePersistentTraits<Value>>(
       iso, Boolean::New(iso, v));
+  return tracked_value(ctx, val);
+}
+
+ValuePtr NewValueLong(IsolatePtr iso_ptr, int64_t v) {
+  ISOLATE_SCOPE_INTERNAL_CONTEXT(iso_ptr);
+  m_value* val = new m_value;
+  val->iso = iso;
+  val->ctx = ctx;
+  val->ptr = Persistent<Value, CopyablePersistentTraits<Value>>(
+      iso, Integer::New(iso, v));
   return tracked_value(ctx, val);
 }
 

@@ -6,13 +6,11 @@ package v8go
 
 //go:generate clang-format -i --verbose -style=Chromium v8go.h v8go.cc
 
-// #cgo CXXFLAGS: -fno-rtti -fpic -std=c++14 -DV8_COMPRESS_POINTERS -DV8_31BIT_SMIS_ON_64BIT_ARCH
-// #cgo darwin linux CXXFLAGS: -I${SRCDIR}/deps/include -I${SRCDIR}/deps/include/angle/include
-// #cgo windows CXXFLAGS: -I${SRCDIR}/deps/include/angle/include
+// #cgo CXXFLAGS: -fno-rtti -fpic -std=c++14 -DV8_COMPRESS_POINTERS -DV8_31BIT_SMIS_ON_64BIT_ARCH -I${SRCDIR}/deps/include -I${SRCDIR}/deps/include/angle/include
 // #cgo LDFLAGS: -pthread -lv8
-// #cgo windows LDFLAGS: -lv8_libplatform -lEGL -lGLESv2
 // #cgo darwin LDFLAGS: -L${SRCDIR}/deps/darwin_x86_64 -lEGL -lGLESv2
 // #cgo linux LDFLAGS: -L${SRCDIR}/deps/linux_x86_64
+// #cgo windows LDFLAGS: -L${SRCDIR}/deps/windows_x86_64 -static -ldbghelp -lssp -lwinmm -lz -lEGL -lGLESv2
 import "C"
 
 // These imports forces `go mod vendor` to pull in all the folders that
@@ -24,4 +22,5 @@ import (
 	_ "github.com/zwang/v8go/deps/include/cppgc"
 	_ "github.com/zwang/v8go/deps/include/libplatform"
 	_ "github.com/zwang/v8go/deps/linux_x86_64"
+	_ "github.com/zwang/v8go/deps/windows_x86_64"
 )

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
@@ -24,21 +25,25 @@ extern bool sonic_gl_error_check;
 }
 
 #define THROW_ON_GL_ERROR(isolate) { \
+    FILE* fp;\
     int errno;\
+    std::string argsStr = "";\
+    fp = fopen("glCommands.txt", "a"); \
+    for (int c = 0; c < args.Length(); ++c) {\
+    	String::Utf8Value arg_utf8(isolate, args[c]);\
+    	std::string arg(*arg_utf8);\
+    	argsStr += arg;\
+    	if (c != args.Length() - 1) {\
+    		argsStr += ", ";\
+    	}\
+    }\
+    fprintf(fp, "function: %s (%s);\n",  __FUNCTION__, argsStr.c_str()); \
     if (sonic_gl_error_check && (errno = glGetError()) != GL_NO_ERROR) {\
-        std::string argsStr = "";\
-        for (int c = 0; c < args.Length(); ++c) {\
-            String::Utf8Value arg_utf8(isolate, args[c]);\
-            std::string arg(*arg_utf8);\
-            argsStr += arg;\
-            if (c != args.Length() - 1) {\
-                argsStr += ", ";\
-            }\
-        }\
         char buff[256]; sprintf( buff, "function: %s; args: %s; gl error: %d;",  __FUNCTION__, argsStr.c_str(), errno ); \
-        fprintf(stderr, "function: %s; args: %s; gl error: %d;\n",  __FUNCTION__, argsStr.c_str(), errno ); \
+        fprintf(fp, "function: %s (%s); gl error: %d;\n",  __FUNCTION__, argsStr.c_str(), errno ); \
         isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, buff).ToLocalChecked()));\
     }\
+    fclose(fp);\
 }
 
 static void glActiveTexture_binder(const FunctionCallbackInfo<Value>& args) {
@@ -2234,7 +2239,7 @@ void bindGL(Isolate *isolate, Local<ObjectTemplate> &gl) {
 	gl->Set(isolate, "RENDERBUFFER_BINDING", Integer::New(isolate, GL_RENDERBUFFER_BINDING));
 	gl->Set(isolate, "MAX_RENDERBUFFER_SIZE", Integer::New(isolate, GL_MAX_RENDERBUFFER_SIZE));
 	gl->Set(isolate, "INVALID_FRAMEBUFFER_OPERATION", Integer::New(isolate, GL_INVALID_FRAMEBUFFER_OPERATION));
-	gl->Set(isolate, "shaderSource", FunctionTemplate::New(isolate, glShaderSource_binder));
+	gl->Set(isolate, "shaderSourceInternal", FunctionTemplate::New(isolate, glShaderSource_binder));
 	gl->Set(isolate, "cullFace", FunctionTemplate::New(isolate, glCullFace_binder));
 	gl->Set(isolate, "getActiveUniform", FunctionTemplate::New(isolate, glGetActiveUniform_binder));
 	gl->Set(isolate, "compileShader", FunctionTemplate::New(isolate, glCompileShader_binder));
@@ -2311,13 +2316,13 @@ void bindGL(Isolate *isolate, Local<ObjectTemplate> &gl) {
 	gl->Set(isolate, "vertexAttrib1f", FunctionTemplate::New(isolate, glVertexAttrib1f_binder));
 	gl->Set(isolate, "bufferData", FunctionTemplate::New(isolate, glBufferData_binder));
 	gl->Set(isolate, "detachShader", FunctionTemplate::New(isolate, glDetachShader_binder));
-	gl->Set(isolate, "attachShader", FunctionTemplate::New(isolate, glAttachShader_binder));
+	gl->Set(isolate, "attachShaderInternal", FunctionTemplate::New(isolate, glAttachShader_binder));
 	gl->Set(isolate, "getFloatv", FunctionTemplate::New(isolate, glGetFloatv_binder));
 	gl->Set(isolate, "readPixels", FunctionTemplate::New(isolate, glReadPixels_binder));
 	gl->Set(isolate, "getAttribLocation", FunctionTemplate::New(isolate, glGetAttribLocation_binder));
 	gl->Set(isolate, "isEnabled", FunctionTemplate::New(isolate, glIsEnabled_binder));
 	gl->Set(isolate, "copyTexImage2D", FunctionTemplate::New(isolate, glCopyTexImage2D_binder));
-	gl->Set(isolate, "createShader", FunctionTemplate::New(isolate, glCreateShader_binder));
+	gl->Set(isolate, "createShaderInternal", FunctionTemplate::New(isolate, glCreateShader_binder));
 	gl->Set(isolate, "enableVertexAttribArray", FunctionTemplate::New(isolate, glEnableVertexAttribArray_binder));
 	gl->Set(isolate, "deleteProgram", FunctionTemplate::New(isolate, glDeleteProgram_binder));
 	gl->Set(isolate, "getBufferParameteriv", FunctionTemplate::New(isolate, glGetBufferParameteriv_binder));
@@ -2360,9 +2365,9 @@ void bindGL(Isolate *isolate, Local<ObjectTemplate> &gl) {
 	gl->Set(isolate, "uniform1fv", FunctionTemplate::New(isolate, glUniform1fv_binder));
 	gl->Set(isolate, "checkFramebufferStatus", FunctionTemplate::New(isolate, glCheckFramebufferStatus_binder));
 	gl->Set(isolate, "uniform1f", FunctionTemplate::New(isolate, glUniform1f_binder));
-	gl->Set(isolate, "createProgram", FunctionTemplate::New(isolate, glCreateProgram_binder));
+	gl->Set(isolate, "createProgramInternal", FunctionTemplate::New(isolate, glCreateProgram_binder));
 	gl->Set(isolate, "compressedTexImage2D", FunctionTemplate::New(isolate, glCompressedTexImage2D_binder));
-	gl->Set(isolate, "uniform1i", FunctionTemplate::New(isolate, glUniform1i_binder));
+	gl->Set(isolate, "uniform1iInternal", FunctionTemplate::New(isolate, glUniform1i_binder));
 	gl->Set(isolate, "finish", FunctionTemplate::New(isolate, glFinish_binder));
 	gl->Set(isolate, "getShaderiv", FunctionTemplate::New(isolate, glGetShaderiv_binder));
 	gl->Set(isolate, "uniformMatrix2fv", FunctionTemplate::New(isolate, glUniformMatrix2fv_binder));

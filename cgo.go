@@ -10,7 +10,7 @@ package v8go
 // #cgo LDFLAGS: -pthread -lv8
 // #cgo darwin LDFLAGS: -L${SRCDIR}/deps/darwin_x86_64 -lEGL -lGLESv2
 // #cgo linux LDFLAGS: -L${SRCDIR}/deps/linux_x86_64
-// #cgo windows LDFLAGS: -L${SRCDIR}/deps/windows_x86_64 -static -ldbghelp -lssp -lwinmm -lz -lEGL -lGLESv2
+// #cgo windows LDFLAGS: -L${SRCDIR}/deps/windows_x86_64 -ldbghelp -lssp -lwinmm -lz -lEGL -lGLESv2
 import "C"
 
 // These imports forces `go mod vendor` to pull in all the folders that

@@ -20,6 +20,8 @@ import (
 	_ "github.com/zwang/v8go/deps/darwin_x86_64"
 	_ "github.com/zwang/v8go/deps/include"
 	_ "github.com/zwang/v8go/deps/include/angle/include"
+	_ "github.com/zwang/v8go/deps/include/angle/include/EGL"
+	_ "github.com/zwang/v8go/deps/include/angle/include/GLES2"
 	_ "github.com/zwang/v8go/deps/include/cppgc"
 	_ "github.com/zwang/v8go/deps/include/libplatform"
 	_ "github.com/zwang/v8go/deps/linux_x86_64"

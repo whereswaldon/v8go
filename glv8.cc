@@ -6,6 +6,7 @@
 using namespace v8;
 
 extern bool sonic_gl_error_check;
+extern bool sonic_log_gl_commands;
 
 #define GL_STENCIL_INDEX 0x1901
 
@@ -24,26 +25,45 @@ extern bool sonic_gl_error_check;
         isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, buff).ToLocalChecked()));\
 }
 
-#define THROW_ON_GL_ERROR(isolate) { \
-    FILE* fp;\
-    int errno;\
+#define LogGLCommands(isolate, argsList, functionName) {\
+    if (!sonic_log_gl_commands) {\
+        return;\
+    }\
     std::string argsStr = "";\
-    fp = fopen("glCommands.txt", "a"); \
-    for (int c = 0; c < args.Length(); ++c) {\
-    	String::Utf8Value arg_utf8(isolate, args[c]);\
+    for (int c = 0; c < argsList.Length(); ++c) {\
+    	String::Utf8Value arg_utf8(isolate, argsList[c]);\
     	std::string arg(*arg_utf8);\
     	argsStr += arg;\
-    	if (c != args.Length() - 1) {\
+    	if (c != argsList.Length() - 1) {\
     		argsStr += ", ";\
     	}\
     }\
-    fprintf(fp, "function: %s (%s);\n",  __FUNCTION__, argsStr.c_str()); \
+    FILE* fp;\
+    fp = fopen("glCommands.txt", "a"); \
+    fprintf(fp, "function: %s (%s);\n",  functionName, argsStr.c_str()); \
+    fclose(fp);\
+}
+
+#define THROW_ON_GL_ERROR(isolate) { \
+    LogGLCommands(isolate, args, __FUNCTION__);\
+    int errno;\
     if (sonic_gl_error_check && (errno = glGetError()) != GL_NO_ERROR) {\
-        char buff[256]; sprintf( buff, "function: %s; args: %s; gl error: %d;",  __FUNCTION__, argsStr.c_str(), errno ); \
-        fprintf(fp, "function: %s (%s); gl error: %d;\n",  __FUNCTION__, argsStr.c_str(), errno ); \
+        std::string argsStr = "";\
+        for (int c = 0; c < args.Length(); ++c) {\
+        	String::Utf8Value arg_utf8(isolate, args[c]);\
+        	std::string arg(*arg_utf8);\
+        	argsStr += arg;\
+        	if (c != args.Length() - 1) {\
+        		argsStr += ", ";\
+        	}\
+        }\
+        char buff[256]; sprintf(buff, "function: %s; args: %s; gl error: %d;", __FUNCTION__, argsStr.c_str(), errno); \
+        FILE* fp;\
+        fp = fopen("glCommands.txt", "a"); \
+        fprintf(fp, "function: %s (%s); gl error: %d;\n", __FUNCTION__, argsStr.c_str(), errno ); \
+        fclose(fp);\
         isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, buff).ToLocalChecked()));\
     }\
-    fclose(fp);\
 }
 
 static void glActiveTexture_binder(const FunctionCallbackInfo<Value>& args) {

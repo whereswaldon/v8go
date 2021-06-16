@@ -191,6 +191,8 @@ extern ValuePtr ExceptionTypeError(IsolatePtr iso_ptr, const char* message);
 const char* Version();
 extern void SetFlags(const char* flags);
 
+extern void SetGLErrorCheckAndLog(int glErrorCheck, int logGLCommands);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif

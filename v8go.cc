@@ -24,7 +24,8 @@ struct _EXCEPTION_POINTERS;
 
 using namespace v8;
 
-bool sonic_gl_error_check = true;
+bool sonic_gl_error_check = false;
+bool sonic_log_gl_commands = false;
 
 auto default_platform = platform::NewDefaultPlatform();
 auto default_allocator = ArrayBuffer::Allocator::NewDefaultAllocator();
@@ -1274,5 +1275,11 @@ const char* Version() {
 
 void SetFlags(const char* flags) {
   V8::SetFlagsFromString(flags);
+}
+
+/********** GL **********/
+void SetGLErrorCheckAndLog(int glErrorCheck, int logGLCommands) {
+  sonic_gl_error_check = glErrorCheck > 0;
+  sonic_log_gl_commands = logGLCommands > 0;
 }
 }

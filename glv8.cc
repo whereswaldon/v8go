@@ -58,10 +58,14 @@ extern bool sonic_log_gl_commands;
         	}\
         }\
         char buff[256]; sprintf(buff, "function: %s; args: %s; gl error: %d;", __FUNCTION__, argsStr.c_str(), errno); \
-        FILE* fp;\
-        fp = fopen("glCommands.txt", "a"); \
-        fprintf(fp, "function: %s (%s); gl error: %d;\n", __FUNCTION__, argsStr.c_str(), errno ); \
-        fclose(fp);\
+        if (sonic_log_gl_commands) {\
+            FILE* fp;\
+            fp = fopen("glCommands.txt", "a"); \
+            fprintf(fp, "function: %s (%s); gl error: %d;\n", __FUNCTION__, argsStr.c_str(), errno);\
+            fclose(fp);\
+        } else {\
+            fprintf(stderr, "function: %s (%s); gl error: %d;\n", __FUNCTION__, argsStr.c_str(), errno);\
+        }\
         isolate->ThrowException(Exception::Error(String::NewFromUtf8(isolate, buff).ToLocalChecked()));\
     }\
 }

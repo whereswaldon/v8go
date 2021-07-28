@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "v8.h"
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
-#include "v8.h"
 using namespace v8;
 
 extern bool sonic_gl_error_check;

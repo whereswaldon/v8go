@@ -9,7 +9,7 @@ package v8go
 // #cgo CXXFLAGS: -fno-rtti -fpic -std=c++14 -DV8_COMPRESS_POINTERS -DV8_31BIT_SMIS_ON_64BIT_ARCH -I${SRCDIR}/deps/include -I${SRCDIR}/deps/include/angle/include
 // #cgo LDFLAGS: -pthread -lv8
 // #cgo darwin LDFLAGS: -L${SRCDIR}/deps/darwin_x86_64 -lEGL -lGLESv2
-// #cgo linux LDFLAGS: -L${SRCDIR}/deps/linux_x86_64
+// #cgo linux LDFLAGS: -L${SRCDIR}/deps/linux_x86_64 -lEGL -lGLESv2
 // #cgo windows LDFLAGS: -L${SRCDIR}/deps/windows_x86_64 -ldbghelp -lssp -lwinmm -lz -lEGL -lGLESv2
 import "C"
 
